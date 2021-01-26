@@ -18,9 +18,9 @@
 
 ## Reactコンポーネントとは
 
-- 2章で出てきたApp.jsのようにhtmlをreturnする関数をReactコンポーネント(或いは単にコンポーネント)と呼ぶ
+- 2章で出てきたApp.tsxのようにhtmlをreturnする関数をReactコンポーネント(或いは単にコンポーネント)と呼ぶ
 
-```jsx
+```tsx
 import React from 'react';
 
 function App() {
@@ -36,10 +36,10 @@ export default App;
 
 ### Helloコンポーネントを作る
 
-- `src/components`ディレクトリを作り`Hello.js`を作成する
+- `src/components`ディレクトリを作り`Hello.tsx`を作成する
     - `Hello World`を2つ表示するだけのコンポーネント
 
-```jsx
+```tsx
 import React from 'react';
 
 function Hello() {
@@ -56,7 +56,7 @@ export default Hello;
 
 ::: tip
 Reactコンポーネントは慣習として最初の文字を大文字で作成します。function名とファイル名の最初の文字は大文字にしましょう。
-:x: hello.js :o: Hello.js
+:x: hello.tsx :o: Hello.tsx
 :::
 
 ## コンポーネントを使う
@@ -65,9 +65,9 @@ Reactコンポーネントは慣習として最初の文字を大文字で作成
 
 - 作成したHelloコンポーネントを呼び出して画面に表示されるようにする
 - `import`したコンポーネントはhtmlタグのようにして使うことができる
-- `src/App.js`を修正する
+- `src/App.tsx`を修正する
 
-```jsx{2,5}
+```tsx{2,5}
 import React from 'react';
 import Hello from './components/Hello'; // Helloコンポーネントをimportする
 
@@ -89,12 +89,17 @@ export default App;
 
 ### Greetコンポーネントを作る
 
-- `src/components`ディレクトリに`Greet.js`を作成する
+- `src/components`ディレクトリに`Greet.tsx`を作成する
 
-```jsx
+```tsx
 import React from 'react';
 
-function Greet({ name }) { // 引数は{}で囲って受け取る
+type GreetProps = {
+  name: string;
+};
+
+function Greet({ name }: GreetProps) {
+  // 引数は{}で囲って受け取る
   return <p>Hello {name}さん！</p>; // htmlタグの中で{}を使うと変数を埋め込むことができる
 }
 
@@ -107,9 +112,9 @@ export default Greet;
 
 ### Greetコンポーネントを使う
 
-- `src/App.js`を修正してGreetコンポーネントを呼び出す
+- `src/App.tsx`を修正してGreetコンポーネントを呼び出す
 
-```jsx{3,9-10}
+```tsx{3,9-10}
 import React from 'react';
 import Hello from './components/Hello';
 import Greet from './components/Greet'; // importを追加
@@ -153,9 +158,9 @@ export default App;
 
 ## 課題の回答例
 
-- src/App.js
+- src/App.tsx
 
-```jsx
+```tsx
 import React from 'react';
 import Hello from './components/Hello';
 import Greet from './components/Greet';
@@ -174,13 +179,22 @@ function App() {
 export default App;
 ```
 
-- src/components/Greet.js
+- src/components/Greet.tsx
 
-```jsx
+```tsx
 import React from 'react';
 
-function Greet({ firstName, lastName }) {
-  return <p>Hello {lastName} {firstName}さん！</p>;
+type GreetProps = {
+  firstName: string;
+  lastName: string;
+};
+
+function Greet({ firstName, lastName }: GreetProps) {
+  return (
+    <p>
+      Hello {lastName} {firstName}さん！
+    </p>
+  );
 }
 
 export default Greet;
