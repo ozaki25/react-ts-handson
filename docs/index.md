@@ -1,3 +1,3 @@
-# React Handson
+# React TypeScript Handson
 
 - React初心者向けのハンズオン
