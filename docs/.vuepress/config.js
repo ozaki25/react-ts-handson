@@ -1,11 +1,10 @@
 const dayjs = require('dayjs');
 
 module.exports = {
-  title: 'ReactHandson',
-  // base: '/react_handson/',
+  title: 'React TS Handson',
   themeConfig: {
-    domain: 'https://react-handson.ozaki25.now.sh',
-    repo: 'ozaki25/react_handson',
+    domain: 'https://react-ts-handson.ozaki25.vercel.app',
+    repo: 'ozaki25/react-ts-handson',
     repoLabel: 'GitHub',
     sidebar: [
       '/1_setup',
