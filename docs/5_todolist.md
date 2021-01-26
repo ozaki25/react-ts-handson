@@ -21,10 +21,10 @@
 
 ### TodoListコンポーネントを作成
 
-- `src/components/TodoList.js`を作成する
+- `src/components/TodoList.tsx`を作成する
     - まずはTodoListの文字列を返すだけのものを作成
 
-```jsx
+```tsx
 import React from 'react';
 
 function TodoList() {
@@ -38,9 +38,9 @@ function TodoList() {
 export default TodoList;
 ```
 
-- TodoListコンポーネントを表示するように`App.js`を修正
+- TodoListコンポーネントを表示するように`App.tsx`を修正
 
-```jsx{2,5}
+```tsx{2,5}
 import React from 'react';
 import TodoList from './components/TodoList'; // importを追加
 
@@ -55,22 +55,35 @@ export default App;
 
 ### TodoListの定義
 
-- StateとしてTodoのリストを保持するようにする
+- まずはTodoListのTodoの型定義を作成しておく
+    - Todoは`id`、`title`、`done`の3つのフィールドからなるとする
+- `src/interfaces/Todo.ts`を作成する
+
+```ts
+export type TodoType = {
+  id: number;
+  title: string;
+  done: boolean;
+};
+```
+
+- 次にTodoListコンポーネントでStateとしてTodoのリストを保持するようにする
 - `todoList`というStateを定義し初期値として`defaultTodo`を設定する
 - `console.log`でStateに値を設定できていることを確認する
 
-```jsx{3-8,11-12}
+```tsx{2,4-9,12-13}
 import React from 'react';
+import { TodoType } from '../interfaces/Todo';
 
 // TodoListのデフォルト値の定義を追加
-const defaultTodo = [
+const defaultTodo: TodoType[] = [
   { id: 1, title: 'HelloWorldを作る', done: true },
   { id: 2, title: 'Counterを作る', done: true },
-  { id: 3, title: 'TodoListを作る', done: false }
+  { id: 3, title: 'TodoListを作る', done: false },
 ];
 
 function TodoList() {
-  const [todoList, setTodoList] = React.useState(defaultTodo);
+  const [todoList, setTodoList] = React.useState<TodoType[]>(defaultTodo);
   console.log(todoList); // stateの値を確認する処理を追加
   return (
     <div>
@@ -82,8 +95,6 @@ function TodoList() {
 export default TodoList;
 ```
 
-- TodoListは`id`、`title`、`done`の3つのフィールドからなるTodoの配列とする
-
 ![todo_console](/images/5/todo_console.png)
 
 ::: tip
@@ -92,21 +103,27 @@ export default TodoList;
 - 出力のされ方はブラウザによって多少の差異がある
 :::
 
+::: tip
+- `defaultTodo`は`TodoType`の配列なので変数の宣言時に`const defaultTodo: TodoType[]`といった形で型の情報を付与している
+:::
+
 ### TodoListを画面に表示する
 
 - Stateで保持しているTodoListを画面に表示する
 
-```jsx{14-17}
+```tsx{16-19}
 import React from 'react';
+import { TodoType } from '../interfaces/Todo';
 
-const defaultTodo = [
+const defaultTodo: TodoType[] = [
   { id: 1, title: 'HelloWorldを作る', done: true },
   { id: 2, title: 'Counterを作る', done: true },
   { id: 3, title: 'TodoListを作る', done: false },
 ];
 
 function TodoList() {
-  const [todoList, setTodoList] = React.useState(defaultTodo);
+  const [todoList, setTodoList] = React.useState<TodoType[]>(defaultTodo);
+  console.log(todoList); // stateの値を確認する処理を追加
   return (
     <div>
       <h1>TodoList</h1>
@@ -137,33 +154,37 @@ export default TodoList;
 
 - 今のままでは完了も未完了も同じ見た目になっているので、完了の場合に取り消し線がつくようにしておく
 - styleを定義し、doneがtrueの場合のみ適用されるようにする
+- TodoList用のstyleとして`src/styles/TodoList.module.css`を作成する
 
-```jsx{9-15,23-25}
+```css
+.done {
+  color: #bbb;
+  text-decoration: line-through;
+}
+```
+
+- `src/components/TodoList.tsx`にCSSを適用する
+
+```tsx{3,17-19}
 import React from 'react';
+import { TodoType } from '../interfaces/Todo';
+import styles from '../styles/TodoList.module.css';
 
-const defaultTodo = [
+const defaultTodo: TodoType[] = [
   { id: 1, title: 'HelloWorldを作る', done: true },
   { id: 2, title: 'Counterを作る', done: true },
   { id: 3, title: 'TodoListを作る', done: false },
 ];
 
-// styleの定義を追加
-const styles = {
-  done: {
-    color: '#bbb',
-    textDecoration: 'line-through',
-  },
-};
-
 function TodoList() {
-  const [todoList, setTodoList] = React.useState(defaultTodo);
+  const [todoList, setTodoList] = React.useState<TodoType[]>(defaultTodo);
   return (
     <div>
       <h1>TodoList</h1>
       {todoList.map(todo => (
         // style属性を追加
         // doneがtrueならstyleを適用、falseなら何も適用しない
-        <p key={todo.id} style={todo.done ? styles.done : null}>
+        <p key={todo.id} className={todo.done ? styles.done : undefined}>
           {todo.title}
         </p>
       ))}
@@ -189,28 +210,24 @@ export default TodoList;
 - どのTodoがクリックされたか判別できるように`id`属性も追加しておく
 - `toggleComplete`関数を追加しクリックした際に呼び出されるようにする
 
-```jsx{19-22,28,32-33}
+```tsx{14-18,24,28-29}
 import React from 'react';
+import { TodoType } from '../interfaces/Todo';
+import styles from '../styles/TodoList.module.css';
 
-const defaultTodo = [
+const defaultTodo: TodoType[] = [
   { id: 1, title: 'HelloWorldを作る', done: true },
   { id: 2, title: 'Counterを作る', done: true },
   { id: 3, title: 'TodoListを作る', done: false },
 ];
 
-const styles = {
-  done: {
-    color: '#bbb',
-    textDecoration: 'line-through',
-  },
-};
-
 function TodoList() {
-  const [todoList, setTodoList] = React.useState(defaultTodo);
+  const [todoList, setTodoList] = React.useState<TodoType[]>(defaultTodo);
 
   // toggleComplete関数を追加
-  const toggleComplete = (event) => {
-    alert(event.target.id); // event.target.idでクリックされた要素のid属性を取得できる
+  const toggleComplete = (event: React.MouseEvent) => {
+    const target = event.target as Element;
+    alert(target.id); // event.target.idでクリックされた要素のid属性を取得できる
   };
 
   return (
@@ -220,8 +237,8 @@ function TodoList() {
         // id属性とonClick属性を追加
         <p
           key={todo.id}
-          style={todo.done ? styles.done : null}
-          id={todo.id}
+          className={todo.done ? styles.done : undefined}
+          id={String(todo.id)}
           onClick={toggleComplete}
         >
           {todo.title}
@@ -240,28 +257,25 @@ export default TodoList;
 
 - クリックしたTodoのdoneの値を更新する
 
-```jsx{19-32}
+```tsx{17-28}
 import React from 'react';
+import { TodoType } from '../interfaces/Todo';
+import styles from '../styles/TodoList.module.css';
 
-const defaultTodo = [
+const defaultTodo: TodoType[] = [
   { id: 1, title: 'HelloWorldを作る', done: true },
   { id: 2, title: 'Counterを作る', done: true },
   { id: 3, title: 'TodoListを作る', done: false },
 ];
 
-const styles = {
-  done: {
-    color: '#bbb',
-    textDecoration: 'line-through',
-  },
-};
-
 function TodoList() {
-  const [todoList, setTodoList] = React.useState(defaultTodo);
+  const [todoList, setTodoList] = React.useState<TodoType[]>(defaultTodo);
 
-  const toggleComplete = event => {
+  const toggleComplete = (event: React.MouseEvent) => {
+    const target = event.target as Element;
+
     // 属性の値は全て文字列で返却されるので数値型に変換する
-    const id = Number(event.target.id);
+    const id = Number(target.id);
 
     // Stateに保持しているtodoListに対してループ処理
     const newTodoList = todoList.map(todo => {
@@ -270,7 +284,7 @@ function TodoList() {
       return todo;
     });
 
-    // 更新後のtodoListでStateを更新する
+    // 新しいtodoListでStateを更新する
     setTodoList(newTodoList);
   };
 
@@ -280,8 +294,8 @@ function TodoList() {
       {todoList.map(todo => (
         <p
           key={todo.id}
-          style={todo.done ? styles.done : null}
-          id={todo.id}
+          className={todo.done ? styles.done : undefined}
+          id={String(todo.id)}
           onClick={toggleComplete}
         >
           {todo.title}
@@ -312,33 +326,27 @@ export default TodoList;
 
 - 追加したいTodoの内容を入力するフォームと追加ボタンを配置する
 
-```jsx{33-37}
+```tsx{27-31}
 import React from 'react';
+import { TodoType } from '../interfaces/Todo';
+import styles from '../styles/TodoList.module.css';
 
-const defaultTodo = [
+const defaultTodo: TodoType[] = [
   { id: 1, title: 'HelloWorldを作る', done: true },
   { id: 2, title: 'Counterを作る', done: true },
   { id: 3, title: 'TodoListを作る', done: false },
 ];
 
-const styles = {
-  done: {
-    color: '#bbb',
-    textDecoration: 'line-through',
-  },
-};
-
 function TodoList() {
-  const [todoList, setTodoList] = React.useState(defaultTodo);
+  const [todoList, setTodoList] = React.useState<TodoType[]>(defaultTodo);
 
-  const toggleComplete = event => {
-    const id = Number(event.target.id);
-
+  const toggleComplete = (event: React.MouseEvent) => {
+    const target = event.target as Element;
+    const id = Number(target.id);
     const newTodoList = todoList.map(todo => {
       if (todo.id === id) todo.done = !todo.done;
       return todo;
     });
-
     setTodoList(newTodoList);
   };
 
@@ -353,8 +361,8 @@ function TodoList() {
       {todoList.map(todo => (
         <p
           key={todo.id}
-          style={todo.done ? styles.done : null}
-          id={todo.id}
+          className={todo.done ? styles.done : undefined}
+          id={String(todo.id)}
           onClick={toggleComplete}
         >
           {todo.title}
@@ -371,58 +379,50 @@ export default TodoList;
 
 ### 入力内容を取得する
 
-```jsx{19-20,22-25,42-45}
+```tsx{14-15,17-20,35-38}
 import React from 'react';
+import { TodoType } from '../interfaces/Todo';
+import styles from '../styles/TodoList.module.css';
 
-const defaultTodo = [
+const defaultTodo: TodoType[] = [
   { id: 1, title: 'HelloWorldを作る', done: true },
   { id: 2, title: 'Counterを作る', done: true },
   { id: 3, title: 'TodoListを作る', done: false },
 ];
 
-const styles = {
-  done: {
-    color: '#bbb',
-    textDecoration: 'line-through',
-  },
-};
-
 function TodoList() {
-  const [todoList, setTodoList] = React.useState(defaultTodo);
+  const [todoList, setTodoList] = React.useState<TodoType[]>(defaultTodo);
 
   // 入力域の参照を定義
-  const input = React.useRef(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   // addTodo関数を追加
   const addTodo = () => {
-    alert(input.current.value); // 入力内容はinput.current.valueで取得できる
+    alert(inputRef.current?.value); // 入力内容はinput.current?.valueで取得できる
   };
 
-  const toggleComplete = event => {
-    const id = Number(event.target.id);
-
+  const toggleComplete = (event: React.MouseEvent) => {
+    const target = event.target as Element;
+    const id = Number(target.id);
     const newTodoList = todoList.map(todo => {
       if (todo.id === id) todo.done = !todo.done;
       return todo;
     });
-
     setTodoList(newTodoList);
   };
 
   return (
     <div>
       <h1>TodoList</h1>
-      <p>
-        {/* 入力域を参照できるようにref属性を追加 */}
-        <input ref={input} />
-        {/* onClick属性を追加 */}
-        <button onClick={addTodo}>追加</button>
-      </p>
+      {/* 入力域を参照できるようにref属性を追加 */}
+      <input ref={inputRef} />
+      {/* onClick属性を追加 */}
+      <button onClick={addTodo}>追加</button>
       {todoList.map(todo => (
         <p
           key={todo.id}
-          style={todo.done ? styles.done : null}
-          id={todo.id}
+          className={todo.done ? styles.done : undefined}
+          id={String(todo.id)}
           onClick={toggleComplete}
         >
           {todo.title}
@@ -436,40 +436,35 @@ export default TodoList;
 ```
 
 - 入力域の参照を取得
-    - `const input = React.useRef(null);`で入力域の参照を定義
-    - `<input ref={input} />`で`ref`属性にセットすることで、変数`input`に入力域の情報が格納される
+    - `const inputRef = React.useRef<HTMLInputElement>(null);`で入力域の参照を定義
+    - `<input ref={inputRef} />`で`ref`属性にセットすることで、変数`inputRef`にinputタグの情報が格納される
 - 追加ボタンクリック時の挙動
     - `<button onClick={addTodo}>追加</button>`でclick時に`addTodo`関数を呼び出すようにしている
 - ここまでで追加ボタンを押すと入力した内容がalertに表示されるようになった
 
 ### 入力内容をTodoListに追加
 
-```jsx{21-34}
+```tsx{17-28}
 import React from 'react';
+import { TodoType } from '../interfaces/Todo';
+import styles from '../styles/TodoList.module.css';
 
-const defaultTodo = [
+const defaultTodo: TodoType[] = [
   { id: 1, title: 'HelloWorldを作る', done: true },
   { id: 2, title: 'Counterを作る', done: true },
   { id: 3, title: 'TodoListを作る', done: false },
 ];
 
-const styles = {
-  done: {
-    color: '#bbb',
-    textDecoration: 'line-through',
-  },
-};
-
 function TodoList() {
-  const [todoList, setTodoList] = React.useState(defaultTodo);
+  const [todoList, setTodoList] = React.useState<TodoType[]>(defaultTodo);
 
-  const input = React.useRef(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const addTodo = () => {
     // 新しいtodoを組み立てる
-    const todo = {
+    const todo: TodoType = {
       id: todoList.length + 1,
-      title: input.current.value, // 入力内容をtitleにセット
+      title: inputRef.current?.value!, // 入力内容をtitleにセット
       done: false,
     };
 
@@ -477,32 +472,29 @@ function TodoList() {
     setTodoList([...todoList, todo]);
 
     // 入力域を空にする
-    input.current.value = '';
+    if (inputRef.current) inputRef.current.value = '';
   };
 
-  const toggleComplete = event => {
-    const id = Number(event.target.id);
-
+  const toggleComplete = (event: React.MouseEvent) => {
+    const target = event.target as Element;
+    const id = Number(target.id);
     const newTodoList = todoList.map(todo => {
       if (todo.id === id) todo.done = !todo.done;
       return todo;
     });
-
     setTodoList(newTodoList);
   };
 
   return (
     <div>
       <h1>TodoList</h1>
-      <p>
-        <input ref={input} />
-        <button onClick={addTodo}>追加</button>
-      </p>
+      <input ref={inputRef} />
+      <button onClick={addTodo}>追加</button>
       {todoList.map(todo => (
         <p
           key={todo.id}
-          style={todo.done ? styles.done : null}
-          id={todo.id}
+          className={todo.done ? styles.done : undefined}
+          id={String(todo.id)}
           onClick={toggleComplete}
         >
           {todo.title}
