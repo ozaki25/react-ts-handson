@@ -26,6 +26,7 @@ module.exports = {
       },
     },
     '@vuepress/back-to-top': {},
+    '@vuepress/medium-zoom': {},
     '@vuepress/pwa': {
       serviceWorker: true,
       updatePopup: true,
