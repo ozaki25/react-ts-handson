@@ -22,9 +22,9 @@
 ### Counterコンポーネントを作る
 
 - 現在のカウンターの値とプラス/マイナスボタンを表示する
-- `src/components/Counter.js`を作成する
+- `src/components/Counter.tsx`を作成する
 
-```jsx
+```tsx
 import React from 'react';
 
 function Counter() {
@@ -40,9 +40,9 @@ function Counter() {
 export default Counter;
 ```
 
-- Counterコンポーネントを表示するように`src/App.js`を修正
+- Counterコンポーネントを表示するように`src/App.tsx`を修正
 
-```jsx{2,5}
+```tsx{2,5}
 import React from 'react';
 import Counter from './components/Counter'; // importを追加
 
@@ -55,26 +55,30 @@ export default App;
 
 ### Styleの追加
 
-- このままでは見た目が悪いので`src/components/Counter.js`にstyleの定義を加える
+- このままでは見た目が悪いので`src/styles/Counter.module.css`を作成してCSSを定義する
 
-```jsx{3-11,15-17}
+```css
+.counter {
+  text-align: center;
+}
+
+.count {
+  font-size: 64px;
+}
+```
+
+- CSSを読み込むように`src/components/Counter.tsx`を修正する
+
+
+```tsx{2,6-8}
 import React from 'react';
-
-// styleの定義を追加
-const styles = {
-  counter: {
-    textAlign: 'center'
-  },
-  count: {
-    fontSize: '64px'
-  }
-};
+import styles from '../styles/Counter.module.css';
 
 function Counter() {
   return (
-    // style属性を追加
-    <div style={styles.counter}> 
-      <div style={styles.count}>0</div>
+    // className属性を追加
+    <div className={styles.counter}>
+      <div className={styles.count}>0</div>
       <button>ー</button>
       <button>＋</button>
     </div>
@@ -85,8 +89,7 @@ export default Counter;
 ```
 
 ::: tip
-- ReactでCSSを書く方法はいろいろあるが、今回は最も簡易な方法を採用している
-- JavaScriptのコードにCSSを埋め込んでいるため、ケバブケース(text-align)ではなくキャメルケース(textAlign)で記載することに注意
+- ReactでCSSを書く方法はいろいろあるが、今回はCSS Modulesという方法を採用している
 :::
 
 - 画像のように中央寄せになっていればOK
@@ -99,17 +102,9 @@ export default Counter;
 - プラス/マイナスボタンを押した時に処理を実行できるようにする
     - まずはクリックしたことを検知するところまで
 
-```jsx{13-16,18-21,26-28}
+```tsx{5-8,10-13,18-20}
 import React from 'react';
-
-const styles = {
-  counter: {
-    textAlign: 'center'
-  },
-  count: {
-    fontSize: '64px'
-  }
-};
+import styles from '../styles/Counter.module.css';
 
 function Counter() {
   // ーを押した時の処理を追加
@@ -123,8 +118,8 @@ function Counter() {
   };
 
   return (
-    <div style={styles.counter}>
-      <div style={styles.count}>0</div>
+    <div className={styles.counter}>
+      <div className={styles.count}>0</div>
       {/* onClick属性を追加 */}
       <button onClick={down}>ー</button>
       <button onClick={up}>＋</button>
@@ -165,21 +160,13 @@ export default Counter;
 
 - `count`というカウンターの値を表すStateを持つようにする
 
-```jsx{13-14,26-27}
+```tsx{5-6,18-19}
 import React from 'react';
-
-const styles = {
-  counter: {
-    textAlign: 'center'
-  },
-  count: {
-    fontSize: '64px'
-  }
-};
+import styles from '../styles/Counter.module.css';
 
 function Counter() {
   // countというStateを定義する
-  const [count, setCount] = React.useState(0)
+  const [count, setCount] = React.useState<number>(0);
 
   const down = () => {
     alert('down');
@@ -190,9 +177,9 @@ function Counter() {
   };
 
   return (
-    <div style={styles.counter}>
+    <div className={styles.counter}>
       {/* 変数countを使うように変更 */}
-      <div style={styles.count}>{count}</div>
+      <div className={styles.count}>{count}</div>
       <button onClick={down}>ー</button>
       <button onClick={up}>＋</button>
     </div>
@@ -203,10 +190,11 @@ export default Counter;
 ```
 
 - 状態(State)の定義
-    - `const [count, setCount] = React.useState(0)`でStateを定義している
+    - `const [count, setCount] = React.useState<number>(0)`でStateを定義している
         - `count`は現在の値
         - `setCount`は`count`を更新するための関数
         - `useState`の引数である`0`は`count`の初期値
+        - `<number>`は管理する値の型
 
 ::: tip
 - 今回は管理するのがカウンターの値だったので`count`、`setCount`という変数名をつけた
@@ -217,20 +205,12 @@ export default Counter;
 
 - `count`は`setCount`を使って更新する
 
-```jsx{16-17,21-22}
+```tsx{8-9,13-14}
 import React from 'react';
-
-const styles = {
-  counter: {
-    textAlign: 'center'
-  },
-  count: {
-    fontSize: '64px'
-  }
-};
+import styles from '../styles/Counter.module.css';
 
 function Counter() {
-  const [count, setCount] = React.useState(0)
+  const [count, setCount] = React.useState<number>(0);
 
   const down = () => {
     // countの値を更新する処理を追加
@@ -243,13 +223,15 @@ function Counter() {
   };
 
   return (
-    <div style={styles.counter}>
-      <div style={styles.count}>{count}</div>
+    <div className={styles.counter}>
+      <div className={styles.count}>{count}</div>
       <button onClick={down}>ー</button>
       <button onClick={up}>＋</button>
     </div>
   );
 }
+
+export default Counter;
 ```
 
 - `setCount`を使って`count`の値を更新すると、フレームワークの機能により自動的に再描画され画面が更新される
@@ -271,22 +253,14 @@ function Counter() {
 
 ## 課題の回答例
 
-- src/components/Counter.js
+- src/components/Counter.tsx
 
-```jsx
+```tsx
 import React from 'react';
-
-const styles = {
-  counter: {
-    textAlign: 'center'
-  },
-  count: {
-    fontSize: '64px'
-  }
-};
+import styles from '../styles/Counter.module.css';
 
 function Counter() {
-  const [count, setCount] = React.useState(0);
+  const [count, setCount] = React.useState<number>(0);
 
   const down = () => {
     setCount(count - 1);
@@ -297,12 +271,12 @@ function Counter() {
   };
 
   const power = () => {
-    setCount(count ** 2 );
+    setCount(count ** 2);
   };
 
   return (
-    <div style={styles.counter}>
-      <div style={styles.count}>{count}</div>
+    <div className={styles.counter}>
+      <div className={styles.count}>{count}</div>
       <button onClick={down}>ー</button>
       <button onClick={up}>＋</button>
       <button onClick={power}>＊＊</button>

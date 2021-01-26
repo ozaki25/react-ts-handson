@@ -11,11 +11,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@vuepress/plugin-back-to-top": "^1.7.1",
-    "@vuepress/plugin-google-analytics": "^1.7.1",
-    "@vuepress/plugin-pwa": "^1.7.1",
-    "dayjs": "^1.9.7",
-    "vuepress": "^1.7.1",
+    "@vuepress/plugin-back-to-top": "^1.8.0",
+    "@vuepress/plugin-medium-zoom": "^1.8.0",
+    "@vuepress/plugin-pwa": "^1.8.0",
+    "dayjs": "^1.10.4",
+    "vuepress": "^1.8.0",
     "vuepress-plugin-seo": "^0.1.4"
   }
 }

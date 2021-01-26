@@ -26,12 +26,10 @@ module.exports = {
       },
     },
     '@vuepress/back-to-top': {},
+    '@vuepress/medium-zoom': {},
     '@vuepress/pwa': {
       serviceWorker: true,
       updatePopup: true,
-    },
-    '@vuepress/google-analytics': {
-      ga: 'UA-127308140-3',
     },
     seo: {
       description: () => 'ハンズオン資料',
