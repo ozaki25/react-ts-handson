@@ -30,9 +30,6 @@ module.exports = {
       serviceWorker: true,
       updatePopup: true,
     },
-    '@vuepress/google-analytics': {
-      ga: 'UA-127308140-3',
-    },
     seo: {
       description: () => 'ハンズオン資料',
     },
